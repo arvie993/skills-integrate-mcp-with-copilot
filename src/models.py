@@ -1,6 +1,7 @@
 from typing import Optional, List
 from datetime import datetime
 from sqlmodel import SQLModel, Field, Relationship
+from sqlalchemy import UniqueConstraint
 
 
 class User(SQLModel, table=True):
@@ -23,9 +24,11 @@ class Activity(SQLModel, table=True):
 
 class Signup(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
-    user_id: int = Field(foreign_key="user.id")
-    activity_id: int = Field(foreign_key="activity.id")
-    created_at: datetime = Field(default_factory=datetime.utcnow)
+    user_id: int = Field(foreign_key="user.id", index=True)
+    activity_id: int = Field(foreign_key="activity.id", index=True)
+    created_at: datetime = Field(default_factory=datetime.utcnow, index=True)
+
+    __table_args__ = (UniqueConstraint("user_id", "activity_id", name="uq_signup_user_activity"),)
 
     user: Optional[User] = Relationship(back_populates="signups")
     activity: Optional[Activity] = Relationship(back_populates="signups")

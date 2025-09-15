@@ -9,19 +9,25 @@ A super simple FastAPI application that allows students to view and sign up for 
 
 ## Getting Started
 
-1. Install the dependencies:
+1. Install the dependencies (from project root):
 
-   ```
-   pip install fastapi uvicorn
-   ```
-
-2. Run the application:
-
-   ```
-   python app.py
+   ```bash
+   pip install -r requirements.txt
    ```
 
-3. Open your browser and go to:
+2. Run the application with Uvicorn (from `src` directory or specify module path):
+
+   ```bash
+   uvicorn app:app --reload
+   ```
+
+   By default this uses an SQLite database file `app.db` in the project root. Override with:
+
+   ```bash
+   DATABASE_URL=sqlite:///./local.db uvicorn app:app --reload
+   ```
+
+3. Open your browser:
    - API documentation: http://localhost:8000/docs
    - Alternative documentation: http://localhost:8000/redoc
 
@@ -47,4 +53,10 @@ The application uses a simple data model with meaningful identifiers:
    - Name
    - Grade level
 
-All data is stored in memory, which means data will be reset when the server restarts.
+All data is persisted using SQLModel (SQLAlchemy) to an SQLite database. Tables are auto-created on startup if they do not exist. A seed dataset of activities and participants is inserted only when the activities table is empty.
+
+## Development Notes
+
+- Unique constraint prevents duplicate signups per user/activity.
+- Future enhancements (capacity enforcement, waitlists, auth) will build on this schema.
+- Migrations: Alembic is listed as a dependency; migrations not yet initialized. Run `alembic init migrations` in the project root before adding structured migrations.
